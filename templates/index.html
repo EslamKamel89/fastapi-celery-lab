@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD"
+      crossorigin="anonymous"
+    />
+    <title>FastAPI Starter ⚡</title>
+  </head>
+
+  <body class="min-h-screen flex items-center justify-center px-4">
+    <main class="w-full max-w-md">
+      <section
+        class="space-y-6 border border-neutral-700/40 rounded-3xl p-10 shadow-2xl flex flex-col text-center bg-black/20 backdrop-blur"
+        x-data="app()"
+      >
+        <div class="space-y-3">
+          <div class="text-5xl">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+
+          <h1 class="!mb-0 text-2xl font-bold tracking-tight">FastAPI ⚡</h1>
+
+          <p class="text-sm opacity-70">
+            Minimal starter kit for building modern APIs
+          </p>
+        </div>
+
+        <div
+          class="border-t border-neutral-700/40 pt-6 space-y-2 text-xs opacity-70"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"
+            ></span>
+            Server Ready
+          </div>
+          <div>Clean. Fast. Production-ready foundation.</div>
+        </div>
+      </section>
+
+      <script>
+        function app() {
+          return {};
+        }
+      </script>
+    </main>
+
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.2/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
+</html>
