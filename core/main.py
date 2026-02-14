@@ -1,3 +1,4 @@
+from celery.result import AsyncResult
 from dotenv import load_dotenv
 
 from core.models_base import Base
@@ -12,6 +13,8 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from apps.reports.router import router as reports_router
+from core.celery_app import celery_app
 from core.config import settings
 from core.database import Database
 from core.deps import get_session
@@ -43,6 +46,20 @@ def create_app() -> FastAPI:
     async def health():
         return {"status": "ok"}
 
+    @app.get("/tasks/{task_id}")
+    async def get_task_status(task_id: str):
+        result = AsyncResult(id=task_id, app=celery_app)
+        response = {
+            "task_id": result.id,
+            "state": result.state,
+        }
+        if result.state == "SUCCESS":
+            response["result"] = result.result
+        if result.state == "FAILURE":
+            response["error"] = str(result.result)
+        return response
+
+    app.include_router(reports_router)
     return app
 
 

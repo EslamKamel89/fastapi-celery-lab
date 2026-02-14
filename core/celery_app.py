@@ -2,6 +2,7 @@ from celery import Celery
 
 # i have to import the apps here because if i don't i will get apps module not found error
 import apps
+from apps.reports import tasks  # force import
 from core.config import settings
 
 
