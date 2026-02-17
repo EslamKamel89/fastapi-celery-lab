@@ -46,19 +46,6 @@ def create_app() -> FastAPI:
     async def health():
         return {"status": "ok"}
 
-    @app.get("/tasks/{task_id}")
-    async def get_task_status(task_id: str):
-        result = AsyncResult(id=task_id, app=celery_app)
-        response = {
-            "task_id": result.id,
-            "state": result.state,
-        }
-        if result.state == "SUCCESS":
-            response["result"] = result.result
-        if result.state == "FAILURE":
-            response["error"] = str(result.result)
-        return response
-
     app.include_router(reports_router)
     return app
 
@@ -70,3 +57,17 @@ app = create_app()
 async def home(request: Request, session: AsyncSession = Depends(get_session)):
 
     return templates.TemplateResponse(request, "index.html")
+
+
+@app.get("/tasks/{task_id}")
+async def get_task_status(task_id: str):
+    result = AsyncResult(id=task_id, app=celery_app)
+    response = {
+        "task_id": result.id,
+        "state": result.state,
+    }
+    if result.state == "SUCCESS":
+        response["result"] = result.result
+    if result.state == "FAILURE":
+        response["error"] = str(result.result)
+    return response

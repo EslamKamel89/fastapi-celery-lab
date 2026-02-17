@@ -30,27 +30,112 @@
 
           <h1 class="!mb-0 text-2xl font-bold tracking-tight">FastAPI ⚡</h1>
 
-          <p class="text-sm opacity-70">
-            Minimal starter kit for building modern APIs
-          </p>
+          <p class="text-sm opacity-70">Async background report generator</p>
         </div>
 
-        <div
-          class="border-t border-neutral-700/40 pt-6 space-y-2 text-xs opacity-70"
-        >
-          <div class="flex items-center justify-center gap-2">
-            <span
-              class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"
-            ></span>
-            Server Ready
+        <div class="border-t border-neutral-700/40 pt-6 space-y-4 text-left">
+          <label class="text-xs opacity-70">Duration (seconds)</label>
+
+          <input
+            type="number"
+            min="1"
+            x-model="duration"
+            class="w-full"
+            placeholder="Duration in seconds"
+          />
+
+          <button
+            @click="startReport"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-2 font-semibold py-3 rounded-xl transition active:scale-[0.98] disabled:opacity-60"
+          >
+            <i
+              class="bi"
+              :class="loading ? 'bi-arrow-repeat animate-spin' : 'bi-file-earmark-bar-graph-fill'"
+            ></i>
+            <span x-show="!loading">Generate Report</span>
+            <span x-show="loading">Processing...</span>
+          </button>
+
+          <div
+            x-show="taskId"
+            class="text-xs opacity-60 border border-neutral-700/40 rounded-lg p-3 bg-black/20 break-all"
+          >
+            Task ID:
+            <span class="font-mono" x-text="taskId"></span>
           </div>
-          <div>Clean. Fast. Production-ready foundation.</div>
+
+          <div class="text-center text-sm font-semibold" x-text="state"></div>
+
+          <div
+            x-show="state === 'STARTED'"
+            class="text-yellow-400 text-center flex items-center justify-center gap-2"
+          >
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse"
+            ></span>
+            Task is running...
+          </div>
+
+          <div x-show="state === 'SUCCESS'" class="space-y-2 text-green-400">
+            <div class="text-center font-semibold">Report Completed!</div>
+            <pre
+              x-text="JSON.stringify(result , null , 2)"
+              class="text-xs overflow-auto max-h-60 border border-green-700/40 rounded-lg p-3 bg-black/20"
+            ></pre>
+          </div>
+
+          <div x-show="state === 'FAILURE'" class="space-y-2 text-red-400">
+            <div class="text-center font-semibold">Task Failed</div>
+            <pre
+              x-text="error"
+              class="text-xs overflow-auto max-h-60 border border-red-700/40 rounded-lg p-3 bg-black/20"
+            ></pre>
+          </div>
         </div>
       </section>
 
       <script>
         function app() {
-          return {};
+          return {
+            duration: 5,
+            taskId: null,
+            state: null,
+            result: null,
+            error: null,
+            loading: false,
+            intervalId: null,
+            async startReport() {
+              this.loading = true;
+              this.state = null;
+              this.error = null;
+              this.result = null;
+              const response = await axios.post(
+                `/reports/heavy-report?duration=${this.duration}`,
+              );
+              this.taskId = response.data.task_id;
+              this.pollTask();
+            },
+            pollTask() {
+              this.intervalId = setInterval(async () => {
+                const response = await axios.get(`/tasks/${this.taskId}`);
+                this.state = response.data.state;
+
+                if (this.state === "SUCCESS") {
+                  this.result = response.data.result;
+                  this.loading = false;
+                  clearInterval(this.intervalId);
+                  return;
+                }
+                if (this.state === "FAILURE") {
+                  this.error = response.data.result;
+                  this.loading = false;
+                  clearInterval(this.intervalId);
+                  return;
+                }
+              }, 1000);
+            },
+          };
         }
       </script>
     </main>
