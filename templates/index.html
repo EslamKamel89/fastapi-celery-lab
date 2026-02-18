@@ -128,7 +128,7 @@
                   return;
                 }
                 if (this.state === "FAILURE") {
-                  this.error = response.data.result;
+                  this.error = response.data.error;
                   this.loading = false;
                   clearInterval(this.intervalId);
                   return;
